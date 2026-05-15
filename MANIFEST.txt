@@ -1,0 +1,192 @@
+Supply Chain ML Predictive Modelling - Jupyter Notebooks
+=========================================================
+
+This collection contains 4 independent Jupyter Notebooks, each implementing one of the CEO Predictive Questions from the Supply Chain ML Report. All notebooks are standalone and follow a consistent structure: objectives, implementation plan, step-by-step code scaffolding, and key takeaways.
+
+---
+
+NOTEBOOK 1: Delivery Performance Prediction (Regression)
+File: notebook_1.ipynb
+Question: Can we predict exactly how long a delivery will take — before we place the order?
+
+Implementation Steps (6):
+  1. Define target distribution & understand delivery_time_days
+  2. Feature selection & preprocessing pipeline (ColumnTransformer pattern)
+  3. Train-test split & linear regression baseline
+  4. Upgrade to Random Forest Regressor with cross-validation
+  5. Feature importance analysis (operational levers)
+  6. Residual analysis & business error thresholds (±2 days acceptable, ±5 review, >5 critical)
+
+Key Outputs:
+  - Distribution statistics (mean, median, std, IQR)
+  - MAE, RMSE, R² comparison (baseline vs. random forest)
+  - Feature importance ranking (top 10)
+  - Business-aligned error scorecard (% predictions in each SLA band)
+
+Data: Uses supplier performance metrics, delivery modes, order characteristics
+Target: delivery_time_days (continuous)
+Model Type: Regression (Linear → Random Forest)
+
+---
+
+NOTEBOOK 2: Unit Cost Forecasting (Regression)
+File: notebook_2.ipynb
+Question: Can we forecast the price per unit from supplier and order characteristics?
+
+Implementation Steps (6):
+  1. Explore price distribution & detect outliers (IQR method)
+  2. Feature engineering (fulfillment_ratio, demand_pressure)
+  3. Train-test split & gradient boosting regressor pipeline
+  4. Cross-validation & hyperparameter sensitivity (n_estimators × max_depth grid)
+  5. Permutation importance analysis (what drives pricing?)
+  6. Procurement savings simulation (actual vs. predicted cost by strategy)
+
+Key Outputs:
+  - Price distribution with outlier flags
+  - Engineered feature correlation heatmap
+  - GBR performance (MAE, RMSE, R², CV R²)
+  - Feature importance ± std (top 10)
+  - Savings simulation by delivery term & procurement action (dollar impact)
+  - Final scorecard for boardroom
+
+Data: Quality scores, supplier reliability, payment terms, delivery terms, demand signals
+Target: price_per_unit (continuous)
+Model Type: Regression (Gradient Boosting)
+
+---
+
+NOTEBOOK 3: Supplier Selection Prediction (Classification)
+File: notebook_3.ipynb
+Question: Can a model learn which suppliers we actually choose — and why?
+
+Implementation Steps (7):
+  1. Examine class balance (detect imbalance, apply class_weight='balanced')
+  2. Feature selection & correlation analysis with selected_supplier_flag
+  3. Logistic regression baseline (interpretable model)
+  4. Upgrade to random forest classifier (AUC comparison)
+  5. Feature importance audit (cross-examine vs. stated procurement policy)
+  6. Probability calibration (rank suppliers by selection likelihood)
+  7. Procurement action audit (consistency check across action codes)
+
+Key Outputs:
+  - Class distribution bar chart
+  - Feature correlation with supplier selection
+  - Confusion matrix (LR baseline)
+  - ROC curves (LR vs. RF with AUC)
+  - Feature importance ranking (alignment with policy?)
+  - Supplier ranking scatter (0–1 probability scores)
+  - Box plots by procurement action & delivery term
+  - Mean selection probability table
+
+Data: Quality, defect rate, delivery performance, pricing, procurement actions
+Target: selected_supplier_flag (binary, 1/0)
+Model Type: Classification (Logistic Regression → Random Forest)
+
+**Strategic Value:** Misalignment between model-learned importance and stated policy reveals actual vs. claimed selection logic.
+
+---
+
+NOTEBOOK 4: Defect Risk Classification (Classification)
+File: notebook_4.ipynb
+Question: Can we flag high-defect-risk suppliers before the order is placed?
+
+Implementation Steps (7):
+  1. Engineer binary risk label from continuous defect_rate (median threshold = 50/50 split)
+  2. Select pre-order features only (exclude post-order like return_rate)
+  3. Train gradient boosting classifier (primary model)
+  4. Threshold optimisation (F1-max vs. conservative >70% precision)
+  5. Risk score distribution (assess model separation quality)
+  6. Risk segmentation by delivery mode × procurement action (heatmap)
+  7. Supplier risk scorecard (boardroom-ready ranked watchlist)
+
+Key Outputs:
+  - Risk label distribution
+  - Pre/post-order feature matrix (ensures deployability)
+  - Confusion matrix & ROC curve (GBC)
+  - Precision-recall curve (threshold trade-offs marked)
+  - Risk score histograms (actual low vs. high risk, separation quality)
+  - Risk heatmap (delivery mode × procurement action)
+  - Colour-coded supplier risk scorecard (sorted by risk, ready to use)
+
+Data: Pre-order features only (quality, reliability, lead time variance, delivery mode, etc.)
+Target: high_defect_risk (binary, engineered from defect_rate > median)
+Model Type: Classification (Gradient Boosting)
+
+**Critical:** One missed high-risk supplier can cost more than the entire model development budget → maximize recall at acceptable precision.
+
+---
+
+USAGE INSTRUCTIONS
+==================
+
+1. Data Preparation:
+   - Replace the commented line `df = pd.read_csv('supply_chain_data.csv')` with your actual data path
+   - Ensure your dataset has the 22 columns mentioned in the report
+
+2. Customization:
+   - All code is commented and parameterized for easy modification
+   - Feature lists are clearly defined at the start of each modeling section
+   - Thresholds and hyperparameters are adjustable
+
+3. Execution:
+   - Start from Step 0 (Setup & Data Loading)
+   - Uncomment code cells as needed
+   - Visualizations are inline and marked with comments
+   - Each step is independent and can be run in sequence
+
+4. Output:
+   - Notebooks generate plots, tables, and summaries suitable for executive presentation
+   - Final outputs include scorecards, importance rankings, and business metrics
+
+---
+
+COMMON PATTERNS ACROSS NOTEBOOKS
+=================================
+
+✓ Consistent Structure:
+  - Markdown title + objective
+  - Implementation plan overview
+  - Step-by-step code scaffolding
+  - Visualization cells for each step
+  - Key takeaways section
+
+✓ Best Practices:
+  - Train-test split with random_state=42 for reproducibility
+  - ColumnTransformer for preprocessing (prevents data leakage)
+  - Pipeline pattern (preprocessor → model)
+  - Cross-validation for stability checks
+  - Business-aligned error/threshold definitions
+
+✓ Executive Readiness:
+  - Confusion matrices, ROC curves, residual plots
+  - Feature importance rankings with business interpretation
+  - Dollar/operational impact translations (savings, SLA bands, risk flags)
+  - Colour-coded scorecard tables ready for boardrooms
+
+---
+
+REPORT REFERENCE
+================
+
+Source: Supply Chain ML Predictive Modelling Report
+Dataset: 22 features across real-world supply chain operations
+Scope: Logistics & Manufacturing
+Framework: scikit-learn (Regression + Classification)
+
+Questions Addressed:
+  Q1 (Regression): Delivery Intelligence → delivery_time_days
+  Q2 (Regression): Cost Management → price_per_unit
+  Q3 (Classification): Supplier Intelligence → selected_supplier_flag
+  Q4 (Classification): Quality Assurance → high_defect_risk
+
+---
+
+Contact / Notes
+===============
+
+These notebooks are templates for production implementation. Adapt preprocessing, 
+feature engineering, and threshold tuning to your specific business context. 
+All commented code provides placeholder examples.
+
+Created: May 2026
+Compatibility: Python 3.7+, scikit-learn 1.0+, pandas, matplotlib, seaborn
